@@ -2,7 +2,7 @@
 %define plugin	vdrrip
 %define name	vdr-plugin-%plugin
 %define version	0.3.0
-%define rel	2
+%define rel	3
 
 %bcond_with	plf
 
@@ -27,6 +27,9 @@ Source3:	vdrrip.sysconfig
 Patch0:		vdrrip-0.3.0-paths.patch
 # (anssi) This seems to be the easiest way to do detaching...
 Patch8:		vdrrip-0.3.0-queue-bg.patch
+# (anssi) Link against dvdread instead of dvdnav, as dvdnav is not needed
+# and does not contain the needed headers as of 11/2007
+Patch9:		vdrrip-dvdnav2dvdread.patch
 # e-tobi patches
 Patch1:		02_maketempdir.dpatch
 Patch2:		03_greppid2.dpatch
@@ -38,7 +41,7 @@ Patch7:		91_vdrrip+dvd-0.3.0-1.3.7.dpatch
 BuildRoot:	%{_tmppath}/%{name}-buildroot
 BuildRequires:	vdr-devel >= 1.4.1-6
 %if %with plf
-BuildRequires:	libdvdnav-devel
+BuildRequires:	libdvdread-devel
 %endif
 Requires:	vdr-abi = %vdr_abi
 # The plugin really requires these itself as well
@@ -82,6 +85,7 @@ or ogg vorbis audio you also need the package ffmpeg.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 chmod -x TODO COPYING README FAQ HISTORY
 perl -pi -e 's,scriptdir=.*$,scriptdir="%{_sysconfdir}/%{plugin}",' scripts/queuehandler.sh
 grep scriptdir= scripts/queuehandler.sh
@@ -109,6 +113,8 @@ param="-d DVD_DEVICE"
 %vdr_plugin_params_end
 
 %build
+# see #35140
+%define vdr_add_optflags -D__STDC_LIMIT_MACROS
 %vdr_plugin_build \
 %if %with plf
 	VDRRIP_DVD=1
