@@ -2,7 +2,7 @@
 %define plugin	vdrrip
 %define name	vdr-plugin-%plugin
 %define version	0.3.0
-%define rel	3
+%define rel	4
 
 %bcond_with	plf
 
@@ -30,6 +30,8 @@ Patch8:		vdrrip-0.3.0-queue-bg.patch
 # (anssi) Link against dvdread instead of dvdnav, as dvdnav is not needed
 # and does not contain the needed headers as of 11/2007
 Patch9:		vdrrip-dvdnav2dvdread.patch
+# #35140
+Patch10:	vdrrip-dvdread-inttypes.patch
 # e-tobi patches
 Patch1:		02_maketempdir.dpatch
 Patch2:		03_greppid2.dpatch
@@ -86,6 +88,7 @@ or ogg vorbis audio you also need the package ffmpeg.
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 chmod -x TODO COPYING README FAQ HISTORY
 perl -pi -e 's,scriptdir=.*$,scriptdir="%{_sysconfdir}/%{plugin}",' scripts/queuehandler.sh
 grep scriptdir= scripts/queuehandler.sh
