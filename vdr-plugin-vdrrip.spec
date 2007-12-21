@@ -40,6 +40,7 @@ Patch4:		06_fix-ogm-ac3-vdrsync-dev.dpatch
 Patch5:		07_preserve-queue-owner.dpatch
 Patch6:		11_fix-identify-aspect.dpatch
 Patch7:		91_vdrrip+dvd-0.3.0-1.3.7.dpatch
+BuildRoot:	%{_tmppath}/%{name}-buildroot
 BuildRequires:	vdr-devel >= 1.4.1-6
 %if %with plf
 BuildRequires:	libdvdread-devel
