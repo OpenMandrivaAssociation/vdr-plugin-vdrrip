@@ -41,7 +41,7 @@ Patch5:		07_preserve-queue-owner.dpatch
 Patch6:		11_fix-identify-aspect.dpatch
 Patch7:		91_vdrrip+dvd-0.3.0-1.3.7.dpatch
 BuildRoot:	%{_tmppath}/%{name}-buildroot
-BuildRequires:	vdr-devel >= 1.4.1-6
+BuildRequires:	vdr-devel >= 1.4.7-9
 %if %with plf
 BuildRequires:	libdvdread-devel
 %endif
@@ -117,7 +117,7 @@ param="-d DVD_DEVICE"
 
 %build
 # see #35140
-%define vdr_add_optflags -D__STDC_LIMIT_MACROS
+VDR_PLUGIN_FLAGS="%vdr_plugin_flags -D__STDC_LIMIT_MACROS"
 %vdr_plugin_build \
 %if %with plf
 	VDRRIP_DVD=1
