@@ -2,7 +2,7 @@
 %define plugin	vdrrip
 %define name	vdr-plugin-%plugin
 %define version	0.3.0
-%define rel	4
+%define rel	5
 
 %bcond_with	plf
 
