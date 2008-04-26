@@ -2,7 +2,7 @@
 %define plugin	vdrrip
 %define name	vdr-plugin-%plugin
 %define version	0.3.0
-%define rel	5
+%define rel	6
 
 %bcond_with	plf
 
@@ -32,6 +32,7 @@ Patch8:		vdrrip-0.3.0-queue-bg.patch
 Patch9:		vdrrip-dvdnav2dvdread.patch
 # #35140
 Patch10:	vdrrip-dvdread-inttypes.patch
+Patch12:	vdrrip-0.3.0-i18n-1.6.patch
 # e-tobi patches
 Patch1:		02_maketempdir.dpatch
 Patch2:		03_greppid2.dpatch
@@ -40,8 +41,9 @@ Patch4:		06_fix-ogm-ac3-vdrsync-dev.dpatch
 Patch5:		07_preserve-queue-owner.dpatch
 Patch6:		11_fix-identify-aspect.dpatch
 Patch7:		91_vdrrip+dvd-0.3.0-1.3.7.dpatch
+Patch11:		95_fix_crop.dpatch
 BuildRoot:	%{_tmppath}/%{name}-buildroot
-BuildRequires:	vdr-devel >= 1.4.7-9
+BuildRequires:	vdr-devel >= 1.6.0
 %if %with plf
 BuildRequires:	libdvdread-devel
 %endif
@@ -49,6 +51,7 @@ Requires:	vdr-abi = %vdr_abi
 # The plugin really requires these itself as well
 Requires:	mplayer
 Requires:	mencoder
+Suggests:	vdrrip
 
 %description
 Vdrrip is a plugin to encode the vdr recordings into several
@@ -66,6 +69,10 @@ Requires(preun): rpm-helper
 Requires(post):	rpm-helper
 Requires:	mplayer
 Requires:	mencoder
+Suggests:	ogmtools
+Suggests:	vdrsync
+Suggests:	mkvtoolnix
+Suggests:	ffmpeg
 
 %description -n %plugin
 The queue handler for VDR vdrrip plugin. It does the actual
@@ -89,14 +96,12 @@ or ogg vorbis audio you also need the package ffmpeg.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%vdr_plugin_prep
 chmod -x TODO COPYING README FAQ HISTORY
 perl -pi -e 's,scriptdir=.*$,scriptdir="%{_sysconfdir}/%{plugin}",' scripts/queuehandler.sh
 grep scriptdir= scripts/queuehandler.sh
-
-cat > README.install.urpmi <<EOF
-You likely want to also install the vdrrip package which
-contains the queue handler script.
-EOF
 
 %vdr_plugin_params_begin %plugin
 # You likely want to also install the vdrrip package which
