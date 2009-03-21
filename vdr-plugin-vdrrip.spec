@@ -33,6 +33,7 @@ Patch9:		vdrrip-dvdnav2dvdread.patch
 # #35140
 Patch10:	vdrrip-dvdread-inttypes.patch
 Patch12:	vdrrip-0.3.0-i18n-1.6.patch
+Patch13:	vdrrip-format-string.patch
 # e-tobi patches
 Patch1:		02_maketempdir.dpatch
 Patch2:		03_greppid2.dpatch
@@ -98,6 +99,7 @@ or ogg vorbis audio you also need the package ffmpeg.
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch13 -p1
 %vdr_plugin_prep
 chmod -x TODO COPYING README FAQ HISTORY
 perl -pi -e 's,scriptdir=.*$,scriptdir="%{_sysconfdir}/%{plugin}",' scripts/queuehandler.sh
