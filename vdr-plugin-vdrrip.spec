@@ -34,6 +34,7 @@ Patch9:		vdrrip-dvdnav2dvdread.patch
 Patch10:	vdrrip-dvdread-inttypes.patch
 Patch12:	vdrrip-0.3.0-i18n-1.6.patch
 Patch13:	vdrrip-format-string.patch
+Patch14:	vdrrip-const-char-gcc4.4.patch
 # e-tobi patches
 Patch1:		02_maketempdir.dpatch
 Patch2:		03_greppid2.dpatch
@@ -44,7 +45,7 @@ Patch6:		11_fix-identify-aspect.dpatch
 Patch7:		91_vdrrip+dvd-0.3.0-1.3.7.dpatch
 Patch11:		95_fix_crop.dpatch
 BuildRoot:	%{_tmppath}/%{name}-buildroot
-BuildRequires:	vdr-devel >= 1.6.0
+BuildRequires:	vdr-devel >= 1.6.0-7
 %if %with plf
 BuildRequires:	libdvdread-devel
 %endif
@@ -100,6 +101,7 @@ or ogg vorbis audio you also need the package ffmpeg.
 %patch11 -p1
 %patch12 -p1
 %patch13 -p1
+%patch14 -p1
 %vdr_plugin_prep
 chmod -x TODO COPYING README FAQ HISTORY
 perl -pi -e 's,scriptdir=.*$,scriptdir="%{_sysconfdir}/%{plugin}",' scripts/queuehandler.sh
@@ -124,7 +126,7 @@ param="-d DVD_DEVICE"
 
 %build
 # see #35140
-VDR_PLUGIN_FLAGS="%vdr_plugin_flags -D__STDC_LIMIT_MACROS"
+VDR_PLUGIN_EXTRA_FLAGS="-D__STDC_LIMIT_MACROS"
 %vdr_plugin_build \
 %if %with plf
 	VDRRIP_DVD=1
