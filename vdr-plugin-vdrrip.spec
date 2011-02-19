@@ -8,12 +8,16 @@
 
 %if %with plf
 %define distsuffix plf
+%if %mdvver >= 201100
+# make EVR of plf build higher than regular to allow update, needed with rpm5 mkrel
+%define extrarelsuffix plf
+%endif
 %endif
 
 Summary:	VDR plugin: A MPlayer using movie encoder
 Name:		%name
 Version:	%version
-Release:	%mkrel %rel
+Release:	%mkrel %rel%{?extrarelsuffix}
 Group:		Video
 License:	GPL
 # an interesting use of a domain...
