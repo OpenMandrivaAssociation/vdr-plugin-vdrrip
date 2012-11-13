@@ -1,0 +1,13 @@
+Index: vdrrip-0.3.0/a-tools.c
+===================================================================
+--- vdrrip-0.3.0/a-tools.c
++++ vdrrip-0.3.0/a-tools.c	2009-07-27 22:03:51.098982195 +0300
+@@ -70,7 +70,7 @@
+ }
+ 
+ int strnumcol(const char *s, char *d) {
+-  char *s1;
++  const char *s1;
+   int i, l;
+ 
+   // let's do some checks:

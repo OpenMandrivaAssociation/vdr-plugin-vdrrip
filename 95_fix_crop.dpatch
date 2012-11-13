@@ -1,0 +1,51 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+       
+## mencoder cropping bug workaround by Stefan Wagner (Wilderigel)
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Fixes a problem with mencoders -vop option. -vf is used now.
+
+@DPATCH@
+diff -urNad vdr-plugin-vdrrip-0.3.0~/movie.c vdr-plugin-vdrrip-0.3.0/movie.c
+--- vdr-plugin-vdrrip-0.3.0~/movie.c	2007-06-10 17:10:38.000000000 +0200
++++ vdr-plugin-vdrrip-0.3.0/movie.c	2007-06-10 17:10:38.000000000 +0200
+@@ -22,7 +22,7 @@
+ #define SAVEFILE "save.vdrrip"
+ 
+ #define IDENTCMD "%s \'%s\'%s -identify -frames 1 -vo md5sum:outfile=/dev/null -ao null 2>/dev/null | sed -e \'s/[`\\!$\"]/\\&/g\'"
+-#define CROPCMD "%s \'%s\'%s -vo null -ao null -quiet -ss %i -frames %i -vop cropdetect 2>/dev/null | grep \"crop=\" | sed \"s/.*crop\\(.*\\)).*/\\1/\" | sort | uniq -c | sort -r"
++#define CROPCMD "%s \'%s\'%s -vo null -ao null -quiet -ss %i -frames %i -vf cropdetect 2>/dev/null | grep \"crop=\" | sed \"s/.*crop\\(.*\\)).*/\\1/\" | sort | uniq -c | sort -r"
+ #define AUDIOCMD "%s \'%s/001.vdr\' -vo null -ao null -frames 0 -aid %i 2>/dev/null | grep AUDIO"
+ #define AUDIOCMDDVD "%s %s -vo null -ao null -frames 0 -aid %i 2>/dev/null | grep AUDIO"
+ #define MENCCMD "%s %s help 2>/dev/null"
+diff -urNad vdr-plugin-vdrrip-0.3.0~/scripts/queuehandler.sh vdr-plugin-vdrrip-0.3.0/scripts/queuehandler.sh
+--- vdr-plugin-vdrrip-0.3.0~/scripts/queuehandler.sh	2007-06-10 17:10:38.000000000 +0200
++++ vdr-plugin-vdrrip-0.3.0/scripts/queuehandler.sh	2007-06-10 17:10:38.000000000 +0200
+@@ -465,7 +465,7 @@
+       ;;
+   esac
+ 
+-  # set mencoder -vop values
++  # set mencoder -vf values
+   if [ "$crop_w" = "-1" -a "$crop_h" = "-1" -a "$crop_x" = "-1" -a \
+        "$crop_y" = "-1" -a "$scale_w" = "-1" -a "$scale_h" = "-1" ]
+   then
+@@ -475,15 +475,15 @@
+   then
+     local vopopts="scale=$scale_w:$scale_h"
+   else
+-    local vopopts="scale=$scale_w:$scale_h,crop=$crop_w:$crop_h:$crop_x:$crop_y"
++    local vopopts="crop=$crop_w:$crop_h:$crop_x:$crop_y,scale=$scale_w:$scale_h"
+   fi
+ 
+   if [ "$ppvalues" ]
+   then
+-    local vopopts="-vop pp=$ppvalues,$vopopts"
++    local vopopts="-vf pp=$ppvalues,$vopopts"
+   elif [ "$vopopts" ]
+   then
+-    local vopopts="-vop $vopopts"
++    local vopopts="-vf $vopopts"
+   fi
+ 
+   # encode in two passes 

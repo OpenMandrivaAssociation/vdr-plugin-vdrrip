@@ -1,0 +1,36 @@
+diff -p -up vdrrip-0.3.0/Makefile.orig vdrrip-0.3.0/Makefile
+--- vdrrip-0.3.0/Makefile.orig	2004-04-22 21:57:22.000000000 +0300
++++ vdrrip-0.3.0/Makefile	2009-03-21 12:36:49.000000000 +0200
+@@ -54,7 +54,7 @@ OBJS = $(PLUGIN).o \
+ 
+ ifdef VDRRIP_DVD
+   DEFINES += -DVDRRIP_DVD
+-  LIBS += -ldvdnav
++  LIBS += -ldvdread
+ endif
+ 
+ ### Implicit rules:
+diff -p -up vdrrip-0.3.0/menu-vdrrip.c.orig vdrrip-0.3.0/menu-vdrrip.c
+--- vdrrip-0.3.0/menu-vdrrip.c.orig	2009-03-21 12:36:49.000000000 +0200
++++ vdrrip-0.3.0/menu-vdrrip.c	2009-03-21 12:36:49.000000000 +0200
+@@ -10,7 +10,7 @@
+ #endif
+ 
+ #ifdef VDRRIP_DVD
+-  #include <dvdnav/ifo_read.h>
++  #include <dvdread/ifo_read.h>
+ #endif //VDRRIP_DVD
+ 
+ #include "menu-vdrrip.h"
+diff -p -up vdrrip-0.3.0/movie.c.orig vdrrip-0.3.0/movie.c
+--- vdrrip-0.3.0/movie.c.orig	2009-03-21 12:36:49.000000000 +0200
++++ vdrrip-0.3.0/movie.c	2009-03-21 12:36:49.000000000 +0200
+@@ -8,7 +8,7 @@
+ #include <math.h>
+ 
+ #ifdef VDRRIP_DVD
+-  #include <dvdnav/ifo_read.h>
++  #include <dvdread/ifo_read.h>
+ #endif //VDRRIP_DVD
+ 
+ #include <vdr/plugin.h>

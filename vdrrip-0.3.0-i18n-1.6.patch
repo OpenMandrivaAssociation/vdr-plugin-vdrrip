@@ -1,0 +1,2770 @@
+
+This is a semi-automatically created i18n adaptation patch and may contain
+errors (such as missing translations). This should only be used as a
+temporary measure until the upstream plugin maintainer fixes the plugin
+properly according to the instructions in i18n-to-gettext.pl.
+
+Created for Mandriva Linux packaging by Anssi Hannula <anssi@mandriva.org>.
+
+
+Index: vdrrip-0.3.0/Makefile
+===================================================================
+--- vdrrip-0.3.0/Makefile
++++ vdrrip-0.3.0/Makefile	2008-04-25 12:26:50.000000000 +0300
+@@ -50,7 +50,7 @@
+ ### The object files (add further files here):
+ 
+ OBJS = $(PLUGIN).o \
+-       menu-vdrrip.o movie.o templates.o codecs.o queue.o vdrriprecordings.o a-tools.o i18n.o
++       menu-vdrrip.o movie.o templates.o codecs.o queue.o vdrriprecordings.o a-tools.o 
+ 
+ ifdef VDRRIP_DVD
+   DEFINES += -DVDRRIP_DVD
+@@ -71,9 +71,34 @@
+ 
+ -include $(DEPFILE)
+ 
++### Internationalization (I18N):
++
++PODIR     = po
++LOCALEDIR = $(VDRDIR)/locale
++I18Npo    = $(wildcard $(PODIR)/*.po)
++I18Nmsgs  = $(addprefix $(LOCALEDIR)/, $(addsuffix /LC_MESSAGES/vdr-$(PLUGIN).mo, $(notdir $(foreach file, $(I18Npo), $(basename $(file))))))
++I18Npot   = $(PODIR)/$(PLUGIN).pot
++
++%.mo: %.po
++	msgfmt -c -o $@ $<
++
++$(I18Npot): $(wildcard *.[ch] *.[ch]xx *.cc *.[ch]pp *.hh)
++	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address='<http://qa.mandriva.com/>' -o $@ $^
++
++%.po: $(I18Npot)
++	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
++	@touch $@
++
++$(I18Nmsgs): $(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.mo
++	@mkdir -p $(dir $@)
++	cp $< $@
++
++.PHONY: i18n
++i18n: $(I18Nmsgs)
++
+ ### Targets:
+ 
+-all: libvdr-$(PLUGIN).so
++all: libvdr-$(PLUGIN).so i18n
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@
+@@ -88,4 +113,5 @@
+ 	@echo Distribution package created as $(PACKAGE).tgz
+ 
+ clean:
++	@-rm -f $(PODIR)/*.mo $(PODIR)/*.pot
+ 	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~
+Index: vdrrip-0.3.0/i18n.c
+===================================================================
+--- vdrrip-0.3.0/i18n.c
++++ vdrrip-0.3.0/i18n.c	2008-04-25 12:26:50.000000000 +0300
+@@ -1,1356 +0,0 @@
+-// i18n.c
+-
+-#include "i18n.h"
+-
+-const tI18nPhrase Phrases[] = {
+-  { "encode vdr-recording",
+-    "VDR-Aufzeichnung encodieren",
+-    "",// TODO
+-    "Comprimi registrazioni di vdr",
+-    "",// TODO
+-    "",// TODO
+-    "Encoder un enregistrement",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-  
+-  { "edit encoding queue",
+-    "Warteschlange bearbeiten",
+-    "",// TODO
+-    "Visualizza coda di compressione",
+-    "",// TODO
+-    "",// TODO
+-    "Voir les encodages en attente",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "edit templates",
+-    "Schablonen bearbeiten",
+-    "",// TODO
+-    "Editare le maschere",
+-    "",// TODO
+-    "",// TODO
+-    "Editer les gabarits",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-  
+-  { "encoding queue",
+-    "Warteschlange",
+-    "",// TODO
+-    "Coda di compressione",
+-    "",// TODO
+-    "",// TODO
+-    "Queue d'encodage",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "edit template",
+-    "Schablone bearbeiten",
+-    "",// TODO
+-    "Editare la maschera",
+-    "",// TODO
+-    "",// TODO
+-    "Editer les gabarits",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "reading movie-data...",
+-    "lese Film-Daten...",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif //VDRVERSNUM
+-  },
+-  
+-  { "edit",
+-    "bearbeiten",
+-    "",// TODO
+-    "Editare",
+-    "",// TODO
+-    "",// TODO
+-    "Editer",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "new",
+-    "neu",
+-    "",// TODO
+-    "Nuovo",
+-    "",// TODO
+-    "",// TODO
+-    "Nouveau",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "delete",
+-    "löschen",
+-    "",// TODO
+-    "Cancellare",
+-    "",// TODO
+-    "",// TODO
+-    "Effacer",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "delete template %s ?",
+-    "Schablone %s löschen ?",
+-    "",// TODO
+-    "Cancellare maschera %s ?",
+-    "",// TODO
+-    "",// TODO
+-    "Effacer le gabarit %s ?",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "Name",
+-    "Name",
+-    "",// TODO
+-    "Nome",
+-    "",// TODO
+-    "",// TODO
+-    "Nom",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "FileSize",
+-    "Datei-Grösse",
+-    "",// TODO
+-    "Dimensione file",
+-    "",// TODO
+-    "",// TODO
+-    "TailleFich",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "FileNumbers",
+-    "Anzahl Dateien",
+-    "",// TODO
+-    "Numero di file",
+-    "",// TODO
+-    "",// TODO
+-    "Nb fichiers",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "BitrateVideo",
+-    "Bitrate Video",
+-    "",// TODO
+-    "Video bitrate",
+-    "",// TODO
+-    "",// TODO
+-    "Bitrate Video",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "BitrateAudio",
+-    "Bitrate Audio",
+-    "",// TODO
+-    "Audio bitrate",
+-    "",// TODO
+-    "",// TODO
+-    "Bitrate Audio",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "Container",
+-    "Container",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "Video-Codec",
+-    "Video Codec",
+-    "",// TODO
+-    "Codec video",
+-    "",// TODO
+-    "",// TODO
+-    "Codec Video",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "Audio-Codec",
+-    "Audio Codec",
+-    "",// TODO
+-    "Codec audio",
+-    "",// TODO
+-    "",// TODO
+-    "Codec Audio",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "Bpp-Value (*100)",
+-    "Bpp-Wert (*100)",
+-    "",// TODO
+-    "Valore Bpp (*100)",
+-    "",// TODO
+-    "",// TODO
+-    "ValeurBpp (*100)",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "ScaleType",
+-    "Skalierungsart",
+-    "",// TODO
+-    "Tipo scalatura",
+-    "",// TODO
+-    "",// TODO
+-    "Dimensionnement",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "encode movie",
+-    "Film encodieren",
+-    "",// TODO
+-    "Compressione video",
+-    "",// TODO
+-    "",// TODO
+-    "Encoder le film",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "add movie to encoding queue ?",
+-    "Film zur Warteschlange hinzufügen ?",
+-    "",// TODO
+-    "Aggiungere un film alla coda di compressione ?",
+-    "",// TODO
+-    "",// TODO
+-    "Ajouter le film à la queue d'encodage ?",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "crop black movie boarders ?",
+-    "schwarze Filmränder schneiden ?",
+-    "",// TODO
+-    "Tagliare i bordi neri del video ?",
+-    "",// TODO
+-    "",// TODO
+-    "Découper le film entre les limites noires ?",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "reset black movie boarders ?",
+-    "schwarze Filmränder löschen ?",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "search for black movie boarders",
+-    "suche nach schwarzen Filmrändern",
+-    "",// TODO
+-    "Ricerca bordi neri nel video",
+-    "",// TODO
+-    "",// TODO
+-    "Rechercher les limites noires dans le film",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-  
+-  { "couldn't detect black movie boarders !",
+-    "konnte keine schwarzen Filmränder erkennen !",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "add to queue",
+-    "in Warteschl.",
+-    "",// TODO
+-    "Aggiunto in coda",
+-    "",// TODO
+-    "",// TODO
+-    "Ajout. Queue",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "crop boarders",
+-    "Ränder schn.",
+-    "",// TODO
+-    "Taglio bordi",
+-    "",// TODO
+-    "",// TODO
+-    "Supp. les limites",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "reset boarders",
+-    "Ränder lösch.",
+-    "",// TODO
+-    "Taglio bordi",
+-    "",// TODO
+-    "",// TODO
+-    "Supp. les limites",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "expert modus(off)",
+-    "Exp.-Modus(aus)",
+-    "",// TODO
+-    "Modo esperto(off)",
+-    "",// TODO
+-    "",// TODO
+-    "Mode Expert(off)",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "expert modus(on)",
+-    "Exp.-Modus(ein)",
+-    "",// TODO
+-    "Modo esperto(on)",
+-    "",// TODO
+-    "",// TODO
+-    "Mode Expert(on)",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "Template",
+-    "Schablone",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "Gabarit",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "Audio-Str.",
+-    "Audiospur",
+-    "",// TODO
+-    "Stream audio",
+-    "",// TODO
+-    "",// TODO
+-    "Flux Audio",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "MovieData",
+-    "Film-Daten",
+-    "",// TODO
+-    "Dati del Film",
+-    "",// TODO
+-    "",// TODO
+-    "Film-Infos",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "CropData",
+-    "Schnitt-Daten",
+-    "",// TODO
+-    "Valori di taglio",
+-    "",// TODO
+-    "",// TODO
+-    "ValeursDécoupage",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-  
+-  { "ScaleData",
+-    "Skalierung",
+-    "",// TODO
+-    "Valore di scalatura",
+-    "",// TODO
+-    "",// TODO
+-    "ValeursRedimensionnement",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "ScaleWidth",
+-    "Skal.-breite",
+-    "",// TODO
+-    "Scalatura larghezza",
+-    "",// TODO
+-    "",// TODO
+-    "Largeur Redimensionnement",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-  
+-  { "ScaleHeight",
+-    "Skal.-höhe",
+-    "",// TODO
+-    "Scalatura altezza",
+-    "",// TODO
+-    "",// TODO
+-    "Hauteur Redimensionnement",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-  
+-  { "------ expert settings: ------",
+-    "--- Experten-Einstellungen: ---",
+-    "",// TODO
+-    "------ settaggi esperto: ------",
+-    "",// TODO
+-    "",// TODO
+-    "--- Paramètres Mode Expert: ---",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "- adjust crop values:",
+-    "- Schnittwerte anpassen:",
+-    "",// TODO
+-    "- aggiustatura valori di taglio:",
+-    "",// TODO
+-    "",// TODO
+-    "- Ajuster les valeurs de découpage:",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "CropWidth",
+-    "Schnittbreite",
+-    "",// TODO
+-    "Taglio larghezza",
+-    "",// TODO
+-    "",// TODO
+-    "Largeur Découpage",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "CropHeight",
+-    "Schnitthöhe",
+-    "",// TODO
+-    "Taglio altezza",
+-    "",// TODO
+-    "",// TODO
+-    "Hauteur Découpage",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "- postprocessing Filters(%s):",
+-    "- Nachbearbeitungsfilter(%s):",
+-    "",// TODO
+-    "- Filtri dopo il processo(%s):",
+-    "",// TODO
+-    "",// TODO
+-    "- Filtres de PostTraitement(%s):",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "- remaining:",
+-    "- sonstiges:",
+-    "",// TODO
+-    "- rimanenti:",
+-    "",// TODO
+-    "",// TODO
+-    "- restant:",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-  
+-  { "MaxScaleWidth",
+-    "max. Skal.-breite",
+-    "",// TODO
+-    "Massima scalatura larghezza",
+-    "",// TODO
+-    "",// TODO
+-    "LargeurMaxiRedimensionnement",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-  
+-  { "MinScaleWidth",
+-    "min. Skal.-breite",
+-    "",// TODO
+-    "Minima scalatura larghezza",
+-    "",// TODO
+-    "",// TODO
+-    "LargeurMiniRedimensionnement",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  }, 
+-  
+-  { "Crop Mode",
+-    "Schnittmodus",
+-    "",// TODO
+-    "Modo di taglio",
+-    "",// TODO
+-    "",// TODO
+-    "Mode de découpage",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-  
+-  { "Crop DetectLength (s)",
+-    "Schnitt-Suchdauer (s)",
+-    "",// TODO
+-    "Ricerca larghezza di taglio (s)",
+-    "",// TODO
+-    "",// TODO
+-    "Découpage-Longeur de détection (s)",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-  
+-  { "Rename movie after encoding",
+-    "Film nach Enc. umbenennen",
+-    "",// TODO
+-    "Rinnominare il film dopo la compressione",
+-    "",// TODO
+-    "",// TODO
+-    "Renommer le film après l'encodage",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "up",
+-    "nach oben",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "down",
+-    "nach unten",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-  
+-  { "switch mode",
+-    "Modus wechseln",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "<ok> for preview-mode",
+-    "<ok> fuer Vorschau-Modus",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "the queuefile is locked by the queuehandler !",
+-    "die Warteschlange wird momentan vom queuehandler gesperrt !",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-
+-  { "delete movie %s from queue ?",
+-    "Film %s von Warteschl. löschen ?",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-  
+-  
+-  { "not used",
+-    "keine Nutzung",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "unknown",
+-    "unbekannt",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-  { "not found",
+-    "nicht gefunden",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif
+-  },
+-
+-#ifdef VDRRIP_DVD
+-  { "encode dvd",
+-    "DVD encodieren",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif //VDRVERSNUM
+-  },
+-
+-  { "back",
+-    "zurueck",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif //VDRVERSNUM
+-  },
+-
+-  { "checking dvd...",
+-    "ueberpruefe dvd...",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif //VDRVERSNUM
+-  },
+-
+-  { "Title*",
+-    "Titel*",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif //VDRVERSNUM
+-  },
+-  
+-  { "accept",
+-    "akzeptieren",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif //VDRVERSNUM
+-  },
+-  
+-  { "reading audio-data from dvd...",
+-    "lese Audio-Daten von DVD...",
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-    "",// TODO
+-#if VDRVERSNUM>10301
+-    "",// TODO
+-#endif //VDRVERSNUM
+-  },
+-  
+-#endif //VDRRIP_DVD
+-
+- { NULL }
+-  };
+Index: vdrrip-0.3.0/i18n.h
+===================================================================
+--- vdrrip-0.3.0/i18n.h
++++ vdrrip-0.3.0/i18n.h	2008-04-25 12:26:50.000000000 +0300
+@@ -1,10 +0,0 @@
+-// i18n.h
+-
+-#ifndef _I18N__H
+-#define _I18N__H
+-
+-#include <vdr/i18n.h>
+-
+-extern const tI18nPhrase Phrases[];
+-
+-#endif //_I18N__H
+Index: vdrrip-0.3.0/menu-vdrrip.c
+===================================================================
+--- vdrrip-0.3.0/menu-vdrrip.c
++++ vdrrip-0.3.0/menu-vdrrip.c	2008-04-25 12:26:50.000000000 +0300
+@@ -716,8 +716,8 @@
+                                                         CropReset = true;
+ 
+     SetHelp(tr("add to queue"), 
+-	    Crop ? tr(CropReset ? "reset boarders" : "crop boarders" ) : NULL,
+-	    tr(Expert ? "expert modus(off)" : "expert modus(on)"),
++	    Crop ? tr(CropReset ? "reset boarders" : trNOOP("crop boarders") ) : NULL,
++	    tr(Expert ? "expert modus(off)" : trNOOP("expert modus(on)")),
+ 	    NULL);
+   }
+ }
+Index: vdrrip-0.3.0/vdrrip.c
+===================================================================
+--- vdrrip-0.3.0/vdrrip.c
++++ vdrrip-0.3.0/vdrrip.c	2008-04-25 12:26:50.000000000 +0300
+@@ -13,7 +13,7 @@
+ #include <vdr/menu.h>
+ #include "menu-vdrrip.h"
+ #include "movie.h"
+-#include "i18n.h"
++
+ #include "a-tools.h"
+ 
+ static const char *VERSION       = "0.3.0";
+@@ -117,7 +117,7 @@
+ bool cPluginVdrrip::Start(void)
+ {
+   // Start any background activities the plugin shall perform.
+-  RegisterI18n(Phrases);
++  
+   return true;
+ }
+ 
+Index: vdrrip-0.3.0/po/de_DE.po
+===================================================================
+--- vdrrip-0.3.0/po/de_DE.po
++++ vdrrip-0.3.0/po/de_DE.po	2008-04-25 12:26:50.000000000 +0300
+@@ -0,0 +1,318 @@
++# VDR vdrrip plugin language source file.
++# Copyright (C) YEAR THE VDR-vdrrip'S COPYRIGHT HOLDER
++# This file is distributed under the same license as the VDR-vdrrip package.
++# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR-vdrrip\n"
++"Report-Msgid-Bugs-To: http://qa.mandriva.com/\n"
++"POT-Creation-Date: 2008-04-25 12:26+0300\n"
++"PO-Revision-Date: 2008-04-25 12:26+0300\n"
++"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-15\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: menu-vdrrip.c:38 menu-vdrrip.c:190
++msgid "encode vdr-recording"
++msgstr "VDR-Aufzeichnung encodieren"
++
++#: menu-vdrrip.c:41
++msgid "encode dvd"
++msgstr "DVD encodieren"
++
++#: menu-vdrrip.c:44 menu-vdrrip.c:229
++msgid "edit encoding queue"
++msgstr "Warteschlange bearbeiten"
++
++#: menu-vdrrip.c:45 menu-vdrrip.c:367
++msgid "edit templates"
++msgstr "Schablonen bearbeiten"
++
++#: menu-vdrrip.c:103
++msgid "accept"
++msgstr "akzeptieren"
++
++#: menu-vdrrip.c:103
++msgid "back"
++msgstr "zurueck"
++
++#: menu-vdrrip.c:141
++msgid "checking dvd..."
++msgstr "ueberpruefe dvd..."
++
++#: menu-vdrrip.c:193
++msgid "scanning recordings..."
++msgstr ""
++
++#: menu-vdrrip.c:262 menu-vdrrip.c:1070
++msgid "the queuefile is locked by the queuehandler !"
++msgstr "die Warteschlange wird momentan vom queuehandler gesperrt !"
++
++#: menu-vdrrip.c:285
++#, c-format
++msgid "delete movie %s from queue ?"
++msgstr "Film %s von Warteschl. löschen ?"
++
++#: menu-vdrrip.c:352 menu-vdrrip.c:372
++msgid "delete"
++msgstr "löschen"
++
++#: menu-vdrrip.c:352
++msgid "down"
++msgstr "nach unten"
++
++#: menu-vdrrip.c:352
++msgid "switch mode"
++msgstr "Modus wechseln"
++
++#: menu-vdrrip.c:352
++msgid "up"
++msgstr "nach oben"
++
++#: menu-vdrrip.c:372
++msgid "edit"
++msgstr "bearbeiten"
++
++#: menu-vdrrip.c:372
++msgid "new"
++msgstr "neu"
++
++#: menu-vdrrip.c:416
++#, c-format
++msgid "delete template %s ?"
++msgstr "Schablone %s löschen ?"
++
++#: menu-vdrrip.c:441
++msgid "edit template"
++msgstr "Schablone bearbeiten"
++
++#: menu-vdrrip.c:447 menu-vdrrip.c:564 menu-vdrrip.c:712
++msgid "ABC/abc"
++msgstr ""
++
++#: menu-vdrrip.c:447 menu-vdrrip.c:564 menu-vdrrip.c:712
++msgid "Delete"
++msgstr ""
++
++#: menu-vdrrip.c:447 menu-vdrrip.c:564 menu-vdrrip.c:712
++msgid "Overwrite"
++msgstr ""
++
++#: menu-vdrrip.c:484 menu-vdrrip.c:732
++msgid "Name"
++msgstr "Name"
++
++#: menu-vdrrip.c:485 menu-vdrrip.c:751 menu-vdrrip.c:758
++msgid "FileSize"
++msgstr "Datei-Grösse"
++
++#: menu-vdrrip.c:486 menu-vdrrip.c:753 menu-vdrrip.c:760
++msgid "FileNumbers"
++msgstr "Anzahl Dateien"
++
++#: menu-vdrrip.c:487 menu-vdrrip.c:785
++msgid "BitrateVideo"
++msgstr "Bitrate Video"
++
++#: menu-vdrrip.c:489 menu-vdrrip.c:491 menu-vdrrip.c:791 menu-vdrrip.c:795
++msgid "BitrateAudio"
++msgstr "Bitrate Audio"
++
++#: menu-vdrrip.c:493 menu-vdrrip.c:801
++msgid "Container"
++msgstr "Container"
++
++#: menu-vdrrip.c:495 menu-vdrrip.c:808
++msgid "Video-Codec"
++msgstr "Video Codec"
++
++#: menu-vdrrip.c:497 menu-vdrrip.c:810
++msgid "Audio-Codec"
++msgstr "Audio Codec"
++
++#: menu-vdrrip.c:499 menu-vdrrip.c:834
++msgid "Bpp-Value (*100)"
++msgstr "Bpp-Wert (*100)"
++
++#: menu-vdrrip.c:500 menu-vdrrip.c:822
++msgid "ScaleType"
++msgstr "Skalierungsart"
++
++#: menu-vdrrip.c:598
++msgid "encode movie"
++msgstr "Film encodieren"
++
++#: menu-vdrrip.c:603
++msgid "reading movie-data..."
++msgstr "lese Film-Daten..."
++
++#: menu-vdrrip.c:718
++msgid "add to queue"
++msgstr "in Warteschl."
++
++#: menu-vdrrip.c:719
++msgid "crop boarders"
++msgstr "Ränder schn."
++
++#: menu-vdrrip.c:719
++msgid "reset boarders"
++msgstr "Ränder lösch."
++
++#: menu-vdrrip.c:720
++msgid "expert modus(off)"
++msgstr "Exp.-Modus(aus)"
++
++#: menu-vdrrip.c:720
++msgid "expert modus(on)"
++msgstr "Exp.-Modus(ein)"
++
++#: menu-vdrrip.c:735
++msgid "Template"
++msgstr "Schablone"
++
++#: menu-vdrrip.c:741 menu-vdrrip.c:1117
++msgid "Title*"
++msgstr "Titel*"
++
++#: menu-vdrrip.c:750 menu-vdrrip.c:775 movie.c:549 movie.c:597 movie.c:598
++#: movie.c:756 movie.c:760 movie.c:766 movie.c:934 movie.c:935
++msgid "unknown"
++msgstr "unbekannt"
++
++#: menu-vdrrip.c:766
++msgid "MovieData"
++msgstr "Film-Daten"
++
++#: menu-vdrrip.c:773
++msgid "not used"
++msgstr "keine Nutzung"
++
++#: menu-vdrrip.c:781
++msgid "CropData"
++msgstr "Schnitt-Daten"
++
++#: menu-vdrrip.c:815 menu-vdrrip.c:1114
++msgid "Audio-Str."
++msgstr "Audiospur"
++
++#: menu-vdrrip.c:832
++msgid "ScaleData"
++msgstr "Skalierung"
++
++#: menu-vdrrip.c:839 menu-vdrrip.c:845
++msgid "ScaleWidth"
++msgstr "Skal.-breite"
++
++#: menu-vdrrip.c:840 menu-vdrrip.c:846
++msgid "ScaleHeight"
++msgstr "Skal.-höhe"
++
++#: menu-vdrrip.c:856
++msgid "------ expert settings: ------"
++msgstr "--- Experten-Einstellungen: ---"
++
++#: menu-vdrrip.c:858
++msgid "- adjust crop values:"
++msgstr "- Schnittwerte anpassen:"
++
++#: menu-vdrrip.c:859
++msgid "CropWidth"
++msgstr "Schnittbreite"
++
++#: menu-vdrrip.c:860
++msgid "CropHeight"
++msgstr "Schnitthöhe"
++
++#: menu-vdrrip.c:862
++#, c-format
++msgid "- postprocessing Filters(%s):"
++msgstr "- Nachbearbeitungsfilter(%s):"
++
++#: menu-vdrrip.c:891 menu-vdrrip.c:1166
++msgid "reading audio-data from dvd..."
++msgstr "lese Audio-Daten von DVD..."
++
++#: menu-vdrrip.c:1037
++msgid "<ok> for preview-mode"
++msgstr "<ok> fuer Vorschau-Modus"
++
++#: menu-vdrrip.c:1038
++msgid "add movie to encoding queue ?"
++msgstr "Film zur Warteschlange hinzufügen ?"
++
++#: menu-vdrrip.c:1083
++msgid "reset black movie boarders ?"
++msgstr "schwarze Filmränder löschen ?"
++
++#: menu-vdrrip.c:1090
++msgid "crop black movie boarders ?"
++msgstr "schwarze Filmränder schneiden ?"
++
++#: menu-vdrrip.c:1092
++msgid "search for black movie boarders"
++msgstr "suche nach schwarzen Filmrändern"
++
++#: menu-vdrrip.c:1096
++msgid "couldn't detect black movie boarders !"
++msgstr "konnte keine schwarzen Filmränder erkennen !"
++
++#: menu-vdrrip.c:1149
++msgid "select dvd title"
++msgstr ""
++
++#: menu-vdrrip.c:1179
++msgid "select audio stream(s)"
++msgstr ""
++
++#: menu-vdrrip.c:1245
++msgid "MaxScaleWidth"
++msgstr "max. Skal.-breite"
++
++#: menu-vdrrip.c:1246
++msgid "MinScaleWidth"
++msgstr "min. Skal.-breite"
++
++#: menu-vdrrip.c:1247
++msgid "Crop Mode"
++msgstr "Schnittmodus"
++
++#: menu-vdrrip.c:1248
++msgid "Crop DetectLength (s)"
++msgstr "Schnitt-Suchdauer (s)"
++
++#: menu-vdrrip.c:1249
++msgid "Rename movie after encoding"
++msgstr "Film nach Enc. umbenennen"
++
++#: menu-vdrrip.c:1249 menu-vdrrip.c:1250 menu-vdrrip.c:1251 menu-vdrrip.c:1252
++#: menu-vdrrip.c:1253
++msgid "no"
++msgstr ""
++
++#: menu-vdrrip.c:1249 menu-vdrrip.c:1250 menu-vdrrip.c:1251 menu-vdrrip.c:1252
++#: menu-vdrrip.c:1253
++msgid "yes"
++msgstr ""
++
++#: menu-vdrrip.c:1250
++msgid "Ogg-Vorbis support"
++msgstr ""
++
++#: menu-vdrrip.c:1251
++msgid "AC3 support (MPlayer-patch inst.)"
++msgstr ""
++
++#: menu-vdrrip.c:1252
++msgid "Ogm support"
++msgstr ""
++
++#: menu-vdrrip.c:1253
++msgid "Matroska support"
++msgstr ""
++
++#: movie.c:605 movie.c:942
++msgid "not found"
++msgstr "nicht gefunden"
+Index: vdrrip-0.3.0/po/fr_FR.po
+===================================================================
+--- vdrrip-0.3.0/po/fr_FR.po
++++ vdrrip-0.3.0/po/fr_FR.po	2008-04-25 12:26:50.000000000 +0300
+@@ -0,0 +1,318 @@
++# VDR vdrrip plugin language source file.
++# Copyright (C) YEAR THE VDR-vdrrip'S COPYRIGHT HOLDER
++# This file is distributed under the same license as the VDR-vdrrip package.
++# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR-vdrrip\n"
++"Report-Msgid-Bugs-To: http://qa.mandriva.com/\n"
++"POT-Creation-Date: 2008-04-25 12:26+0300\n"
++"PO-Revision-Date: 2008-04-25 12:26+0300\n"
++"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-1\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: menu-vdrrip.c:38 menu-vdrrip.c:190
++msgid "encode vdr-recording"
++msgstr "Encoder un enregistrement"
++
++#: menu-vdrrip.c:41
++msgid "encode dvd"
++msgstr ""
++
++#: menu-vdrrip.c:44 menu-vdrrip.c:229
++msgid "edit encoding queue"
++msgstr "Voir les encodages en attente"
++
++#: menu-vdrrip.c:45 menu-vdrrip.c:367
++msgid "edit templates"
++msgstr "Editer les gabarits"
++
++#: menu-vdrrip.c:103
++msgid "accept"
++msgstr ""
++
++#: menu-vdrrip.c:103
++msgid "back"
++msgstr ""
++
++#: menu-vdrrip.c:141
++msgid "checking dvd..."
++msgstr ""
++
++#: menu-vdrrip.c:193
++msgid "scanning recordings..."
++msgstr ""
++
++#: menu-vdrrip.c:262 menu-vdrrip.c:1070
++msgid "the queuefile is locked by the queuehandler !"
++msgstr ""
++
++#: menu-vdrrip.c:285
++#, c-format
++msgid "delete movie %s from queue ?"
++msgstr ""
++
++#: menu-vdrrip.c:352 menu-vdrrip.c:372
++msgid "delete"
++msgstr "Effacer"
++
++#: menu-vdrrip.c:352
++msgid "down"
++msgstr ""
++
++#: menu-vdrrip.c:352
++msgid "switch mode"
++msgstr ""
++
++#: menu-vdrrip.c:352
++msgid "up"
++msgstr ""
++
++#: menu-vdrrip.c:372
++msgid "edit"
++msgstr "Editer"
++
++#: menu-vdrrip.c:372
++msgid "new"
++msgstr "Nouveau"
++
++#: menu-vdrrip.c:416
++#, c-format
++msgid "delete template %s ?"
++msgstr "Effacer le gabarit %s ?"
++
++#: menu-vdrrip.c:441
++msgid "edit template"
++msgstr "Editer les gabarits"
++
++#: menu-vdrrip.c:447 menu-vdrrip.c:564 menu-vdrrip.c:712
++msgid "ABC/abc"
++msgstr ""
++
++#: menu-vdrrip.c:447 menu-vdrrip.c:564 menu-vdrrip.c:712
++msgid "Delete"
++msgstr ""
++
++#: menu-vdrrip.c:447 menu-vdrrip.c:564 menu-vdrrip.c:712
++msgid "Overwrite"
++msgstr ""
++
++#: menu-vdrrip.c:484 menu-vdrrip.c:732
++msgid "Name"
++msgstr "Nom"
++
++#: menu-vdrrip.c:485 menu-vdrrip.c:751 menu-vdrrip.c:758
++msgid "FileSize"
++msgstr "TailleFich"
++
++#: menu-vdrrip.c:486 menu-vdrrip.c:753 menu-vdrrip.c:760
++msgid "FileNumbers"
++msgstr "Nb fichiers"
++
++#: menu-vdrrip.c:487 menu-vdrrip.c:785
++msgid "BitrateVideo"
++msgstr "Bitrate Video"
++
++#: menu-vdrrip.c:489 menu-vdrrip.c:491 menu-vdrrip.c:791 menu-vdrrip.c:795
++msgid "BitrateAudio"
++msgstr "Bitrate Audio"
++
++#: menu-vdrrip.c:493 menu-vdrrip.c:801
++msgid "Container"
++msgstr ""
++
++#: menu-vdrrip.c:495 menu-vdrrip.c:808
++msgid "Video-Codec"
++msgstr "Codec Video"
++
++#: menu-vdrrip.c:497 menu-vdrrip.c:810
++msgid "Audio-Codec"
++msgstr "Codec Audio"
++
++#: menu-vdrrip.c:499 menu-vdrrip.c:834
++msgid "Bpp-Value (*100)"
++msgstr "ValeurBpp (*100)"
++
++#: menu-vdrrip.c:500 menu-vdrrip.c:822
++msgid "ScaleType"
++msgstr "Dimensionnement"
++
++#: menu-vdrrip.c:598
++msgid "encode movie"
++msgstr "Encoder le film"
++
++#: menu-vdrrip.c:603
++msgid "reading movie-data..."
++msgstr ""
++
++#: menu-vdrrip.c:718
++msgid "add to queue"
++msgstr "Ajout. Queue"
++
++#: menu-vdrrip.c:719
++msgid "crop boarders"
++msgstr "Supp. les limites"
++
++#: menu-vdrrip.c:719
++msgid "reset boarders"
++msgstr "Supp. les limites"
++
++#: menu-vdrrip.c:720
++msgid "expert modus(off)"
++msgstr "Mode Expert(off)"
++
++#: menu-vdrrip.c:720
++msgid "expert modus(on)"
++msgstr "Mode Expert(on)"
++
++#: menu-vdrrip.c:735
++msgid "Template"
++msgstr "Gabarit"
++
++#: menu-vdrrip.c:741 menu-vdrrip.c:1117
++msgid "Title*"
++msgstr ""
++
++#: menu-vdrrip.c:750 menu-vdrrip.c:775 movie.c:549 movie.c:597 movie.c:598
++#: movie.c:756 movie.c:760 movie.c:766 movie.c:934 movie.c:935
++msgid "unknown"
++msgstr ""
++
++#: menu-vdrrip.c:766
++msgid "MovieData"
++msgstr "Film-Infos"
++
++#: menu-vdrrip.c:773
++msgid "not used"
++msgstr ""
++
++#: menu-vdrrip.c:781
++msgid "CropData"
++msgstr "ValeursDécoupage"
++
++#: menu-vdrrip.c:815 menu-vdrrip.c:1114
++msgid "Audio-Str."
++msgstr "Flux Audio"
++
++#: menu-vdrrip.c:832
++msgid "ScaleData"
++msgstr "ValeursRedimensionnement"
++
++#: menu-vdrrip.c:839 menu-vdrrip.c:845
++msgid "ScaleWidth"
++msgstr "Largeur Redimensionnement"
++
++#: menu-vdrrip.c:840 menu-vdrrip.c:846
++msgid "ScaleHeight"
++msgstr "Hauteur Redimensionnement"
++
++#: menu-vdrrip.c:856
++msgid "------ expert settings: ------"
++msgstr "--- Paramètres Mode Expert: ---"
++
++#: menu-vdrrip.c:858
++msgid "- adjust crop values:"
++msgstr "- Ajuster les valeurs de découpage:"
++
++#: menu-vdrrip.c:859
++msgid "CropWidth"
++msgstr "Largeur Découpage"
++
++#: menu-vdrrip.c:860
++msgid "CropHeight"
++msgstr "Hauteur Découpage"
++
++#: menu-vdrrip.c:862
++#, c-format
++msgid "- postprocessing Filters(%s):"
++msgstr "- Filtres de PostTraitement(%s):"
++
++#: menu-vdrrip.c:891 menu-vdrrip.c:1166
++msgid "reading audio-data from dvd..."
++msgstr ""
++
++#: menu-vdrrip.c:1037
++msgid "<ok> for preview-mode"
++msgstr ""
++
++#: menu-vdrrip.c:1038
++msgid "add movie to encoding queue ?"
++msgstr "Ajouter le film à la queue d'encodage ?"
++
++#: menu-vdrrip.c:1083
++msgid "reset black movie boarders ?"
++msgstr ""
++
++#: menu-vdrrip.c:1090
++msgid "crop black movie boarders ?"
++msgstr "Découper le film entre les limites noires ?"
++
++#: menu-vdrrip.c:1092
++msgid "search for black movie boarders"
++msgstr "Rechercher les limites noires dans le film"
++
++#: menu-vdrrip.c:1096
++msgid "couldn't detect black movie boarders !"
++msgstr ""
++
++#: menu-vdrrip.c:1149
++msgid "select dvd title"
++msgstr ""
++
++#: menu-vdrrip.c:1179
++msgid "select audio stream(s)"
++msgstr ""
++
++#: menu-vdrrip.c:1245
++msgid "MaxScaleWidth"
++msgstr "LargeurMaxiRedimensionnement"
++
++#: menu-vdrrip.c:1246
++msgid "MinScaleWidth"
++msgstr "LargeurMiniRedimensionnement"
++
++#: menu-vdrrip.c:1247
++msgid "Crop Mode"
++msgstr "Mode de découpage"
++
++#: menu-vdrrip.c:1248
++msgid "Crop DetectLength (s)"
++msgstr "Découpage-Longeur de détection (s)"
++
++#: menu-vdrrip.c:1249
++msgid "Rename movie after encoding"
++msgstr "Renommer le film après l'encodage"
++
++#: menu-vdrrip.c:1249 menu-vdrrip.c:1250 menu-vdrrip.c:1251 menu-vdrrip.c:1252
++#: menu-vdrrip.c:1253
++msgid "no"
++msgstr ""
++
++#: menu-vdrrip.c:1249 menu-vdrrip.c:1250 menu-vdrrip.c:1251 menu-vdrrip.c:1252
++#: menu-vdrrip.c:1253
++msgid "yes"
++msgstr ""
++
++#: menu-vdrrip.c:1250
++msgid "Ogg-Vorbis support"
++msgstr ""
++
++#: menu-vdrrip.c:1251
++msgid "AC3 support (MPlayer-patch inst.)"
++msgstr ""
++
++#: menu-vdrrip.c:1252
++msgid "Ogm support"
++msgstr ""
++
++#: menu-vdrrip.c:1253
++msgid "Matroska support"
++msgstr ""
++
++#: movie.c:605 movie.c:942
++msgid "not found"
++msgstr ""
+Index: vdrrip-0.3.0/po/it_IT.po
+===================================================================
+--- vdrrip-0.3.0/po/it_IT.po
++++ vdrrip-0.3.0/po/it_IT.po	2008-04-25 12:26:50.000000000 +0300
+@@ -0,0 +1,318 @@
++# VDR vdrrip plugin language source file.
++# Copyright (C) YEAR THE VDR-vdrrip'S COPYRIGHT HOLDER
++# This file is distributed under the same license as the VDR-vdrrip package.
++# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR-vdrrip\n"
++"Report-Msgid-Bugs-To: http://qa.mandriva.com/\n"
++"POT-Creation-Date: 2008-04-25 12:26+0300\n"
++"PO-Revision-Date: 2008-04-25 12:26+0300\n"
++"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-15\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: menu-vdrrip.c:38 menu-vdrrip.c:190
++msgid "encode vdr-recording"
++msgstr "Comprimi registrazioni di vdr"
++
++#: menu-vdrrip.c:41
++msgid "encode dvd"
++msgstr ""
++
++#: menu-vdrrip.c:44 menu-vdrrip.c:229
++msgid "edit encoding queue"
++msgstr "Visualizza coda di compressione"
++
++#: menu-vdrrip.c:45 menu-vdrrip.c:367
++msgid "edit templates"
++msgstr "Editare le maschere"
++
++#: menu-vdrrip.c:103
++msgid "accept"
++msgstr ""
++
++#: menu-vdrrip.c:103
++msgid "back"
++msgstr ""
++
++#: menu-vdrrip.c:141
++msgid "checking dvd..."
++msgstr ""
++
++#: menu-vdrrip.c:193
++msgid "scanning recordings..."
++msgstr ""
++
++#: menu-vdrrip.c:262 menu-vdrrip.c:1070
++msgid "the queuefile is locked by the queuehandler !"
++msgstr ""
++
++#: menu-vdrrip.c:285
++#, c-format
++msgid "delete movie %s from queue ?"
++msgstr ""
++
++#: menu-vdrrip.c:352 menu-vdrrip.c:372
++msgid "delete"
++msgstr "Cancellare"
++
++#: menu-vdrrip.c:352
++msgid "down"
++msgstr ""
++
++#: menu-vdrrip.c:352
++msgid "switch mode"
++msgstr ""
++
++#: menu-vdrrip.c:352
++msgid "up"
++msgstr ""
++
++#: menu-vdrrip.c:372
++msgid "edit"
++msgstr "Editare"
++
++#: menu-vdrrip.c:372
++msgid "new"
++msgstr "Nuovo"
++
++#: menu-vdrrip.c:416
++#, c-format
++msgid "delete template %s ?"
++msgstr "Cancellare maschera %s ?"
++
++#: menu-vdrrip.c:441
++msgid "edit template"
++msgstr "Editare la maschera"
++
++#: menu-vdrrip.c:447 menu-vdrrip.c:564 menu-vdrrip.c:712
++msgid "ABC/abc"
++msgstr ""
++
++#: menu-vdrrip.c:447 menu-vdrrip.c:564 menu-vdrrip.c:712
++msgid "Delete"
++msgstr ""
++
++#: menu-vdrrip.c:447 menu-vdrrip.c:564 menu-vdrrip.c:712
++msgid "Overwrite"
++msgstr ""
++
++#: menu-vdrrip.c:484 menu-vdrrip.c:732
++msgid "Name"
++msgstr "Nome"
++
++#: menu-vdrrip.c:485 menu-vdrrip.c:751 menu-vdrrip.c:758
++msgid "FileSize"
++msgstr "Dimensione file"
++
++#: menu-vdrrip.c:486 menu-vdrrip.c:753 menu-vdrrip.c:760
++msgid "FileNumbers"
++msgstr "Numero di file"
++
++#: menu-vdrrip.c:487 menu-vdrrip.c:785
++msgid "BitrateVideo"
++msgstr "Video bitrate"
++
++#: menu-vdrrip.c:489 menu-vdrrip.c:491 menu-vdrrip.c:791 menu-vdrrip.c:795
++msgid "BitrateAudio"
++msgstr "Audio bitrate"
++
++#: menu-vdrrip.c:493 menu-vdrrip.c:801
++msgid "Container"
++msgstr ""
++
++#: menu-vdrrip.c:495 menu-vdrrip.c:808
++msgid "Video-Codec"
++msgstr "Codec video"
++
++#: menu-vdrrip.c:497 menu-vdrrip.c:810
++msgid "Audio-Codec"
++msgstr "Codec audio"
++
++#: menu-vdrrip.c:499 menu-vdrrip.c:834
++msgid "Bpp-Value (*100)"
++msgstr "Valore Bpp (*100)"
++
++#: menu-vdrrip.c:500 menu-vdrrip.c:822
++msgid "ScaleType"
++msgstr "Tipo scalatura"
++
++#: menu-vdrrip.c:598
++msgid "encode movie"
++msgstr "Compressione video"
++
++#: menu-vdrrip.c:603
++msgid "reading movie-data..."
++msgstr ""
++
++#: menu-vdrrip.c:718
++msgid "add to queue"
++msgstr "Aggiunto in coda"
++
++#: menu-vdrrip.c:719
++msgid "crop boarders"
++msgstr "Taglio bordi"
++
++#: menu-vdrrip.c:719
++msgid "reset boarders"
++msgstr "Taglio bordi"
++
++#: menu-vdrrip.c:720
++msgid "expert modus(off)"
++msgstr "Modo esperto(off)"
++
++#: menu-vdrrip.c:720
++msgid "expert modus(on)"
++msgstr "Modo esperto(on)"
++
++#: menu-vdrrip.c:735
++msgid "Template"
++msgstr ""
++
++#: menu-vdrrip.c:741 menu-vdrrip.c:1117
++msgid "Title*"
++msgstr ""
++
++#: menu-vdrrip.c:750 menu-vdrrip.c:775 movie.c:549 movie.c:597 movie.c:598
++#: movie.c:756 movie.c:760 movie.c:766 movie.c:934 movie.c:935
++msgid "unknown"
++msgstr ""
++
++#: menu-vdrrip.c:766
++msgid "MovieData"
++msgstr "Dati del Film"
++
++#: menu-vdrrip.c:773
++msgid "not used"
++msgstr ""
++
++#: menu-vdrrip.c:781
++msgid "CropData"
++msgstr "Valori di taglio"
++
++#: menu-vdrrip.c:815 menu-vdrrip.c:1114
++msgid "Audio-Str."
++msgstr "Stream audio"
++
++#: menu-vdrrip.c:832
++msgid "ScaleData"
++msgstr "Valore di scalatura"
++
++#: menu-vdrrip.c:839 menu-vdrrip.c:845
++msgid "ScaleWidth"
++msgstr "Scalatura larghezza"
++
++#: menu-vdrrip.c:840 menu-vdrrip.c:846
++msgid "ScaleHeight"
++msgstr "Scalatura altezza"
++
++#: menu-vdrrip.c:856
++msgid "------ expert settings: ------"
++msgstr "------ settaggi esperto: ------"
++
++#: menu-vdrrip.c:858
++msgid "- adjust crop values:"
++msgstr "- aggiustatura valori di taglio:"
++
++#: menu-vdrrip.c:859
++msgid "CropWidth"
++msgstr "Taglio larghezza"
++
++#: menu-vdrrip.c:860
++msgid "CropHeight"
++msgstr "Taglio altezza"
++
++#: menu-vdrrip.c:862
++#, c-format
++msgid "- postprocessing Filters(%s):"
++msgstr "- Filtri dopo il processo(%s):"
++
++#: menu-vdrrip.c:891 menu-vdrrip.c:1166
++msgid "reading audio-data from dvd..."
++msgstr ""
++
++#: menu-vdrrip.c:1037
++msgid "<ok> for preview-mode"
++msgstr ""
++
++#: menu-vdrrip.c:1038
++msgid "add movie to encoding queue ?"
++msgstr "Aggiungere un film alla coda di compressione ?"
++
++#: menu-vdrrip.c:1083
++msgid "reset black movie boarders ?"
++msgstr ""
++
++#: menu-vdrrip.c:1090
++msgid "crop black movie boarders ?"
++msgstr "Tagliare i bordi neri del video ?"
++
++#: menu-vdrrip.c:1092
++msgid "search for black movie boarders"
++msgstr "Ricerca bordi neri nel video"
++
++#: menu-vdrrip.c:1096
++msgid "couldn't detect black movie boarders !"
++msgstr ""
++
++#: menu-vdrrip.c:1149
++msgid "select dvd title"
++msgstr ""
++
++#: menu-vdrrip.c:1179
++msgid "select audio stream(s)"
++msgstr ""
++
++#: menu-vdrrip.c:1245
++msgid "MaxScaleWidth"
++msgstr "Massima scalatura larghezza"
++
++#: menu-vdrrip.c:1246
++msgid "MinScaleWidth"
++msgstr "Minima scalatura larghezza"
++
++#: menu-vdrrip.c:1247
++msgid "Crop Mode"
++msgstr "Modo di taglio"
++
++#: menu-vdrrip.c:1248
++msgid "Crop DetectLength (s)"
++msgstr "Ricerca larghezza di taglio (s)"
++
++#: menu-vdrrip.c:1249
++msgid "Rename movie after encoding"
++msgstr "Rinnominare il film dopo la compressione"
++
++#: menu-vdrrip.c:1249 menu-vdrrip.c:1250 menu-vdrrip.c:1251 menu-vdrrip.c:1252
++#: menu-vdrrip.c:1253
++msgid "no"
++msgstr ""
++
++#: menu-vdrrip.c:1249 menu-vdrrip.c:1250 menu-vdrrip.c:1251 menu-vdrrip.c:1252
++#: menu-vdrrip.c:1253
++msgid "yes"
++msgstr ""
++
++#: menu-vdrrip.c:1250
++msgid "Ogg-Vorbis support"
++msgstr ""
++
++#: menu-vdrrip.c:1251
++msgid "AC3 support (MPlayer-patch inst.)"
++msgstr ""
++
++#: menu-vdrrip.c:1252
++msgid "Ogm support"
++msgstr ""
++
++#: menu-vdrrip.c:1253
++msgid "Matroska support"
++msgstr ""
++
++#: movie.c:605 movie.c:942
++msgid "not found"
++msgstr ""
+Index: vdrrip-0.3.0/po/vdrrip.pot
+===================================================================
+--- vdrrip-0.3.0/po/vdrrip.pot
++++ vdrrip-0.3.0/po/vdrrip.pot	2008-04-25 12:26:50.000000000 +0300
+@@ -0,0 +1,319 @@
++# SOME DESCRIPTIVE TITLE.
++# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
++# This file is distributed under the same license as the PACKAGE package.
++# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
++#
++#, fuzzy
++msgid ""
++msgstr ""
++"Project-Id-Version: PACKAGE VERSION\n"
++"Report-Msgid-Bugs-To: http://qa.mandriva.com/\n"
++"POT-Creation-Date: 2008-04-25 12:26+0300\n"
++"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
++"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
++"Language-Team: LANGUAGE <LL@li.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=CHARSET\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: menu-vdrrip.c:38 menu-vdrrip.c:190
++msgid "encode vdr-recording"
++msgstr ""
++
++#: menu-vdrrip.c:41
++msgid "encode dvd"
++msgstr ""
++
++#: menu-vdrrip.c:44 menu-vdrrip.c:229
++msgid "edit encoding queue"
++msgstr ""
++
++#: menu-vdrrip.c:45 menu-vdrrip.c:367
++msgid "edit templates"
++msgstr ""
++
++#: menu-vdrrip.c:103
++msgid "accept"
++msgstr ""
++
++#: menu-vdrrip.c:103
++msgid "back"
++msgstr ""
++
++#: menu-vdrrip.c:141
++msgid "checking dvd..."
++msgstr ""
++
++#: menu-vdrrip.c:193
++msgid "scanning recordings..."
++msgstr ""
++
++#: menu-vdrrip.c:262 menu-vdrrip.c:1070
++msgid "the queuefile is locked by the queuehandler !"
++msgstr ""
++
++#: menu-vdrrip.c:285
++#, c-format
++msgid "delete movie %s from queue ?"
++msgstr ""
++
++#: menu-vdrrip.c:352 menu-vdrrip.c:372
++msgid "delete"
++msgstr ""
++
++#: menu-vdrrip.c:352
++msgid "down"
++msgstr ""
++
++#: menu-vdrrip.c:352
++msgid "switch mode"
++msgstr ""
++
++#: menu-vdrrip.c:352
++msgid "up"
++msgstr ""
++
++#: menu-vdrrip.c:372
++msgid "edit"
++msgstr ""
++
++#: menu-vdrrip.c:372
++msgid "new"
++msgstr ""
++
++#: menu-vdrrip.c:416
++#, c-format
++msgid "delete template %s ?"
++msgstr ""
++
++#: menu-vdrrip.c:441
++msgid "edit template"
++msgstr ""
++
++#: menu-vdrrip.c:447 menu-vdrrip.c:564 menu-vdrrip.c:712
++msgid "ABC/abc"
++msgstr ""
++
++#: menu-vdrrip.c:447 menu-vdrrip.c:564 menu-vdrrip.c:712
++msgid "Delete"
++msgstr ""
++
++#: menu-vdrrip.c:447 menu-vdrrip.c:564 menu-vdrrip.c:712
++msgid "Overwrite"
++msgstr ""
++
++#: menu-vdrrip.c:484 menu-vdrrip.c:732
++msgid "Name"
++msgstr ""
++
++#: menu-vdrrip.c:485 menu-vdrrip.c:751 menu-vdrrip.c:758
++msgid "FileSize"
++msgstr ""
++
++#: menu-vdrrip.c:486 menu-vdrrip.c:753 menu-vdrrip.c:760
++msgid "FileNumbers"
++msgstr ""
++
++#: menu-vdrrip.c:487 menu-vdrrip.c:785
++msgid "BitrateVideo"
++msgstr ""
++
++#: menu-vdrrip.c:489 menu-vdrrip.c:491 menu-vdrrip.c:791 menu-vdrrip.c:795
++msgid "BitrateAudio"
++msgstr ""
++
++#: menu-vdrrip.c:493 menu-vdrrip.c:801
++msgid "Container"
++msgstr ""
++
++#: menu-vdrrip.c:495 menu-vdrrip.c:808
++msgid "Video-Codec"
++msgstr ""
++
++#: menu-vdrrip.c:497 menu-vdrrip.c:810
++msgid "Audio-Codec"
++msgstr ""
++
++#: menu-vdrrip.c:499 menu-vdrrip.c:834
++msgid "Bpp-Value (*100)"
++msgstr ""
++
++#: menu-vdrrip.c:500 menu-vdrrip.c:822
++msgid "ScaleType"
++msgstr ""
++
++#: menu-vdrrip.c:598
++msgid "encode movie"
++msgstr ""
++
++#: menu-vdrrip.c:603
++msgid "reading movie-data..."
++msgstr ""
++
++#: menu-vdrrip.c:718
++msgid "add to queue"
++msgstr ""
++
++#: menu-vdrrip.c:719
++msgid "crop boarders"
++msgstr ""
++
++#: menu-vdrrip.c:719
++msgid "reset boarders"
++msgstr ""
++
++#: menu-vdrrip.c:720
++msgid "expert modus(off)"
++msgstr ""
++
++#: menu-vdrrip.c:720
++msgid "expert modus(on)"
++msgstr ""
++
++#: menu-vdrrip.c:735
++msgid "Template"
++msgstr ""
++
++#: menu-vdrrip.c:741 menu-vdrrip.c:1117
++msgid "Title*"
++msgstr ""
++
++#: menu-vdrrip.c:750 menu-vdrrip.c:775 movie.c:549 movie.c:597 movie.c:598
++#: movie.c:756 movie.c:760 movie.c:766 movie.c:934 movie.c:935
++msgid "unknown"
++msgstr ""
++
++#: menu-vdrrip.c:766
++msgid "MovieData"
++msgstr ""
++
++#: menu-vdrrip.c:773
++msgid "not used"
++msgstr ""
++
++#: menu-vdrrip.c:781
++msgid "CropData"
++msgstr ""
++
++#: menu-vdrrip.c:815 menu-vdrrip.c:1114
++msgid "Audio-Str."
++msgstr ""
++
++#: menu-vdrrip.c:832
++msgid "ScaleData"
++msgstr ""
++
++#: menu-vdrrip.c:839 menu-vdrrip.c:845
++msgid "ScaleWidth"
++msgstr ""
++
++#: menu-vdrrip.c:840 menu-vdrrip.c:846
++msgid "ScaleHeight"
++msgstr ""
++
++#: menu-vdrrip.c:856
++msgid "------ expert settings: ------"
++msgstr ""
++
++#: menu-vdrrip.c:858
++msgid "- adjust crop values:"
++msgstr ""
++
++#: menu-vdrrip.c:859
++msgid "CropWidth"
++msgstr ""
++
++#: menu-vdrrip.c:860
++msgid "CropHeight"
++msgstr ""
++
++#: menu-vdrrip.c:862
++#, c-format
++msgid "- postprocessing Filters(%s):"
++msgstr ""
++
++#: menu-vdrrip.c:891 menu-vdrrip.c:1166
++msgid "reading audio-data from dvd..."
++msgstr ""
++
++#: menu-vdrrip.c:1037
++msgid "<ok> for preview-mode"
++msgstr ""
++
++#: menu-vdrrip.c:1038
++msgid "add movie to encoding queue ?"
++msgstr ""
++
++#: menu-vdrrip.c:1083
++msgid "reset black movie boarders ?"
++msgstr ""
++
++#: menu-vdrrip.c:1090
++msgid "crop black movie boarders ?"
++msgstr ""
++
++#: menu-vdrrip.c:1092
++msgid "search for black movie boarders"
++msgstr ""
++
++#: menu-vdrrip.c:1096
++msgid "couldn't detect black movie boarders !"
++msgstr ""
++
++#: menu-vdrrip.c:1149
++msgid "select dvd title"
++msgstr ""
++
++#: menu-vdrrip.c:1179
++msgid "select audio stream(s)"
++msgstr ""
++
++#: menu-vdrrip.c:1245
++msgid "MaxScaleWidth"
++msgstr ""
++
++#: menu-vdrrip.c:1246
++msgid "MinScaleWidth"
++msgstr ""
++
++#: menu-vdrrip.c:1247
++msgid "Crop Mode"
++msgstr ""
++
++#: menu-vdrrip.c:1248
++msgid "Crop DetectLength (s)"
++msgstr ""
++
++#: menu-vdrrip.c:1249
++msgid "Rename movie after encoding"
++msgstr ""
++
++#: menu-vdrrip.c:1249 menu-vdrrip.c:1250 menu-vdrrip.c:1251 menu-vdrrip.c:1252
++#: menu-vdrrip.c:1253
++msgid "no"
++msgstr ""
++
++#: menu-vdrrip.c:1249 menu-vdrrip.c:1250 menu-vdrrip.c:1251 menu-vdrrip.c:1252
++#: menu-vdrrip.c:1253
++msgid "yes"
++msgstr ""
++
++#: menu-vdrrip.c:1250
++msgid "Ogg-Vorbis support"
++msgstr ""
++
++#: menu-vdrrip.c:1251
++msgid "AC3 support (MPlayer-patch inst.)"
++msgstr ""
++
++#: menu-vdrrip.c:1252
++msgid "Ogm support"
++msgstr ""
++
++#: menu-vdrrip.c:1253
++msgid "Matroska support"
++msgstr ""
++
++#: movie.c:605 movie.c:942
++msgid "not found"
++msgstr ""

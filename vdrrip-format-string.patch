@@ -1,0 +1,13 @@
+Index: vdrrip-0.3.0/menu-vdrrip.c
+===================================================================
+--- vdrrip-0.3.0/menu-vdrrip.c
++++ vdrrip-0.3.0/menu-vdrrip.c	2009-03-21 12:39:21.000000000 +0200
+@@ -990,7 +990,7 @@
+     else {
+       char *pp = NULL;
+       asprintf(&pp, "%s/hb/vb/dr/al", PPDeint[MovOSD.PPDeinterlace]);
+-      dsyslog(pp);
++      dsyslog("%s", pp);
+       M->setPPValues(pp);
+       FREE(pp);
+     }
