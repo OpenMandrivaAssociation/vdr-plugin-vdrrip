@@ -1,5 +1,2 @@
 sources:
-  "vdrrip.init:"	a23a087463bb93e3963022c0aa6833fbf8e3c600
-  "vdrripsplit.sh:"	d822877128c75f112a2da62082556bc77760f592
-  "vdrrip.sysconfig:"	78f9ef7d87cd5794b622d42789f756b092f2256a
-  "vdr-vdrrip-0.3.0.tgz:"	1a5602cde8d1bf10a3d04c22c7233426acdb769a
+  "vdr-vdrrip-0.3.0.tgz": 1a5602cde8d1bf10a3d04c22c7233426acdb769a

@@ -8,16 +8,12 @@
 
 %if %with plf
 %define distsuffix plf
-%if %mdvver >= 201100
-# make EVR of plf build higher than regular to allow update, needed with rpm5 mkrel
-%define extrarelsuffix plf
-%endif
 %endif
 
 Summary:	VDR plugin: A MPlayer using movie encoder
 Name:		%name
 Version:	%version
-Release:	%mkrel %rel%{?extrarelsuffix}
+Release:	%mkrel %rel
 Group:		Video
 License:	GPL
 # an interesting use of a domain...
@@ -175,3 +171,60 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/%{plugin}/queuehandler.sh.conf
 %{_initrddir}/%{plugin}
 %config(noreplace) %{_sysconfdir}/sysconfig/%{plugin}
+
+
+%changelog
+* Tue Jul 28 2009 Anssi Hannula <anssi@mandriva.org> 0.3.0-9mdv2010.0
++ Revision: 401088
+- rebuild for new VDR
+- adapt for vdr compilation flags handling changes, bump buildrequires
+- fix build with gcc4.4 (const-char-gcc4.4.patch)
+
+* Sat Mar 21 2009 Anssi Hannula <anssi@mandriva.org> 0.3.0-8mdv2009.1
++ Revision: 359792
+- fix format strings (format-string.patch)
+- rediff dvdnav2dvdread patch
+- rebuild for new vdr
+- detach queuehandler.sh from controlling terminal with setsid
+
+* Mon Apr 28 2008 Anssi Hannula <anssi@mandriva.org> 0.3.0-7mdv2009.0
++ Revision: 197995
+- rebuild for new vdr
+
+* Sat Apr 26 2008 Anssi Hannula <anssi@mandriva.org> 0.3.0-6mdv2009.0
++ Revision: 197739
+- add vdr_plugin_prep
+- bump buildrequires on vdr-devel
+- adapt to gettext i18n of VDR 1.6 (semi-automatic patch)
+- fix cropping (P11 from e-tobi)
+- plugin package suggests vdrrip
+- vdrrip package suggests encoding tools for all codecs
+- drop never-installed urpmi readme file
+
+* Fri Jan 04 2008 Anssi Hannula <anssi@mandriva.org> 0.3.0-5mdv2008.1
++ Revision: 145252
+- rebuild for new vdr
+- adapt for changed vdr optflags scheme
+
+  + Olivier Blin <oblin@mandriva.com>
+    - restore BuildRoot
+
+  + Thierry Vignaud <tv@mandriva.org>
+    - kill re-definition of %%buildroot on Pixel's request
+
+* Wed Nov 14 2007 Anssi Hannula <anssi@mandriva.org> 0.3.0-4mdv2008.1
++ Revision: 108696
+- include inttypes.h before dvdread (#35140)
+
+* Tue Nov 06 2007 Anssi Hannula <anssi@mandriva.org> 0.3.0-3mdv2008.1
++ Revision: 106428
+- link against dvdread instead of dvdnav as that is what is actually used
+
+* Mon Oct 29 2007 Anssi Hannula <anssi@mandriva.org> 0.3.0-2mdv2008.1
++ Revision: 103235
+- rebuild for new vdr
+
+* Fri Jul 20 2007 Anssi Hannula <anssi@mandriva.org> 0.3.0-1mdv2008.0
++ Revision: 53776
+- initial Mandriva release
+
