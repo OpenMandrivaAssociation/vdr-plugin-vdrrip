@@ -2,7 +2,7 @@
 %define plugin	vdrrip
 %define name	vdr-plugin-%plugin
 %define version	0.3.0
-%define rel	9
+%define rel	10
 
 %bcond_with	plf
 
@@ -44,7 +44,6 @@ Patch5:		07_preserve-queue-owner.dpatch
 Patch6:		11_fix-identify-aspect.dpatch
 Patch7:		91_vdrrip+dvd-0.3.0-1.3.7.dpatch
 Patch11:		95_fix_crop.dpatch
-BuildRoot:	%{_tmppath}/%{name}-buildroot
 BuildRequires:	vdr-devel >= 1.6.0-7
 %if %with plf
 BuildRequires:	libdvdread-devel
@@ -133,7 +132,6 @@ VDR_PLUGIN_EXTRA_FLAGS="-D__STDC_LIMIT_MACROS"
 %endif
 
 %install
-rm -rf %{buildroot}
 %vdr_plugin_install
 install -d -m755 %{buildroot}%{_bindir}
 install -m755 scripts/queuehandler.sh %{buildroot}%{_bindir}
@@ -145,20 +143,11 @@ install -d -m755 %{buildroot}%{_initrddir} %{buildroot}%{_sysconfdir}/sysconfig
 install -m755 %SOURCE2 %{buildroot}%{_initrddir}/%{plugin}
 install -m644 %SOURCE3 %{buildroot}%{_sysconfdir}/sysconfig/%{plugin}
 
-%clean
-rm -rf %{buildroot}
-
-%post
-%vdr_plugin_post %plugin
-
 %post -n %plugin
 %_post_service %plugin
 
 %preun -n %plugin
 %_preun_service %plugin
-
-%postun
-%vdr_plugin_postun %plugin
 
 %files -f %plugin.vdr
 %defattr(-,root,root)
