@@ -1,8 +1,4 @@
-
 %define plugin	vdrrip
-%define name	vdr-plugin-%plugin
-%define version	0.3.0
-%define rel	10
 
 %bcond_with	plf
 
@@ -11,18 +7,18 @@
 %endif
 
 Summary:	VDR plugin: A MPlayer using movie encoder
-Name:		%name
-Version:	%version
-Release:	%mkrel %rel
+Name:		vdr-plugin-%plugin
+Version:	0.3.0
+Release:	14
 Group:		Video
 License:	GPL
 # an interesting use of a domain...
 URL:		http://www.a-land.de/
-Source:		http://www.a-land.de/vdr-%plugin-%version.tgz
+Source:		http://www.a-land.de/vdr-%plugin-%{version}.tgz
 # e-tobi script
 Source1:	vdrripsplit.sh
 # initscript
-Source2:	vdrrip.init
+Source2:	vdrrip.service
 Source3:	vdrrip.sysconfig
 Patch0:		vdrrip-0.3.0-paths.patch
 # (anssi) This seems to be the easiest way to do detaching...
@@ -48,7 +44,7 @@ BuildRequires:	vdr-devel >= 1.6.0-7
 %if %with plf
 BuildRequires:	libdvdread-devel
 %endif
-Requires:	vdr-abi = %vdr_abi
+Requires:	vdr-abi = %{vdr_abi}
 # The plugin really requires these itself as well
 Requires:	mplayer
 Requires:	mencoder
@@ -85,7 +81,7 @@ mkvtoolnix and vdrsync. For encoding ogm or matroska files with mp3
 or ogg vorbis audio you also need the package ffmpeg.
 
 %prep
-%setup -q -n %plugin-%version
+%setup -q -n %plugin-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -135,22 +131,25 @@ VDR_PLUGIN_EXTRA_FLAGS="-D__STDC_LIMIT_MACROS"
 %vdr_plugin_install
 install -d -m755 %{buildroot}%{_bindir}
 install -m755 scripts/queuehandler.sh %{buildroot}%{_bindir}
-install -m755 %SOURCE1 %{buildroot}%{_bindir}
+install -m755 %{SOURCE1} %{buildroot}%{_bindir}
 install -d -m755 %{buildroot}%{_sysconfdir}/%{plugin}
 install -m644 scripts/queuehandler.sh.conf %{buildroot}%{_sysconfdir}/%{plugin}
 
-install -d -m755 %{buildroot}%{_initrddir} %{buildroot}%{_sysconfdir}/sysconfig
-install -m755 %SOURCE2 %{buildroot}%{_initrddir}/%{plugin}
-install -m644 %SOURCE3 %{buildroot}%{_sysconfdir}/sysconfig/%{plugin}
+install -d -m755 %{buildroot}%{_unitdir} %{buildroot}%{_sysconfdir}/sysconfig
+install -m0644 %{SOURCE2} -D %{buildroot}%{_unitdir}/%{name}.service
+install -m644 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/%{plugin}
 
-%post -n %plugin
-%_post_service %plugin
+%post -n %{plugin}
+%systemd_post %{plugin}.service
 
-%preun -n %plugin
-%_preun_service %plugin
+%preun -n %{plugin}
+%systemd_preun %{plugin}.service
+
+%postun -n %{plugin}
+%systemd_postun_with_restart %{plugin}.service
+
 
 %files -f %plugin.vdr
-%defattr(-,root,root)
 %doc README HISTORY FAQ TODO COPYING scripts/sleephalt.sh scripts/vdrshutdown.sh
 
 %files -n %plugin
@@ -158,62 +157,7 @@ install -m644 %SOURCE3 %{buildroot}%{_sysconfdir}/sysconfig/%{plugin}
 %{_bindir}/queuehandler.sh
 %dir %{_sysconfdir}/%{plugin}
 %config(noreplace) %{_sysconfdir}/%{plugin}/queuehandler.sh.conf
-%{_initrddir}/%{plugin}
+%attr(0644,root,root) %{_unitdir}/%{name}.service
 %config(noreplace) %{_sysconfdir}/sysconfig/%{plugin}
 
-
-%changelog
-* Tue Jul 28 2009 Anssi Hannula <anssi@mandriva.org> 0.3.0-9mdv2010.0
-+ Revision: 401088
-- rebuild for new VDR
-- adapt for vdr compilation flags handling changes, bump buildrequires
-- fix build with gcc4.4 (const-char-gcc4.4.patch)
-
-* Sat Mar 21 2009 Anssi Hannula <anssi@mandriva.org> 0.3.0-8mdv2009.1
-+ Revision: 359792
-- fix format strings (format-string.patch)
-- rediff dvdnav2dvdread patch
-- rebuild for new vdr
-- detach queuehandler.sh from controlling terminal with setsid
-
-* Mon Apr 28 2008 Anssi Hannula <anssi@mandriva.org> 0.3.0-7mdv2009.0
-+ Revision: 197995
-- rebuild for new vdr
-
-* Sat Apr 26 2008 Anssi Hannula <anssi@mandriva.org> 0.3.0-6mdv2009.0
-+ Revision: 197739
-- add vdr_plugin_prep
-- bump buildrequires on vdr-devel
-- adapt to gettext i18n of VDR 1.6 (semi-automatic patch)
-- fix cropping (P11 from e-tobi)
-- plugin package suggests vdrrip
-- vdrrip package suggests encoding tools for all codecs
-- drop never-installed urpmi readme file
-
-* Fri Jan 04 2008 Anssi Hannula <anssi@mandriva.org> 0.3.0-5mdv2008.1
-+ Revision: 145252
-- rebuild for new vdr
-- adapt for changed vdr optflags scheme
-
-  + Olivier Blin <oblin@mandriva.com>
-    - restore BuildRoot
-
-  + Thierry Vignaud <tv@mandriva.org>
-    - kill re-definition of %%buildroot on Pixel's request
-
-* Wed Nov 14 2007 Anssi Hannula <anssi@mandriva.org> 0.3.0-4mdv2008.1
-+ Revision: 108696
-- include inttypes.h before dvdread (#35140)
-
-* Tue Nov 06 2007 Anssi Hannula <anssi@mandriva.org> 0.3.0-3mdv2008.1
-+ Revision: 106428
-- link against dvdread instead of dvdnav as that is what is actually used
-
-* Mon Oct 29 2007 Anssi Hannula <anssi@mandriva.org> 0.3.0-2mdv2008.1
-+ Revision: 103235
-- rebuild for new vdr
-
-* Fri Jul 20 2007 Anssi Hannula <anssi@mandriva.org> 0.3.0-1mdv2008.0
-+ Revision: 53776
-- initial Mandriva release
 

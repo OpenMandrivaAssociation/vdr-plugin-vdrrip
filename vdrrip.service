@@ -1,0 +1,16 @@
+[Unit]
+Description=vdrrip queue handler
+After=syslog.target
+
+[Service]
+Type=simple
+Environment=VDR_CONFIGDIR=/var/lib/vdr/config QUEUE_FILE=${VDR_CONFIGDIR}/plugins/queue.vdrrip VDR_VIDEO=/var/lib/vdr/video VDRRIP_DIR=${VDR_VIDEO}/vdrrip VDR_USER=vdr
+EnvironmentFile=-sysconfig/vdr
+EnvironmentFile=-sysconfig/vdrrip
+User=${VDR_USER}
+ExecStart=/usr/bin/queuehandler.sh ${QUEUE_FILE} ${VDRRIP_DIR}
+Restart=on-abort
+SyslogIdentifier=btseed
+
+[Install]
+WantedBy=multi-user.target
