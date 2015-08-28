@@ -9,7 +9,7 @@
 Summary:	VDR plugin: A MPlayer using movie encoder
 Name:		vdr-plugin-%plugin
 Version:	0.3.0
-Release:	15
+Release:	16
 Group:		Video
 License:	GPL
 # an interesting use of a domain...
