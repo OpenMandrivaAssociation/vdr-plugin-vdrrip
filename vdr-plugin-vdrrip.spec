@@ -13,7 +13,7 @@ Release:	16
 Group:		Video
 License:	GPL
 # an interesting use of a domain...
-URL:		http://www.a-land.de/
+URL:		https://www.a-land.de/
 Source:		http://www.a-land.de/vdr-%plugin-%{version}.tgz
 # e-tobi script
 Source1:	vdrripsplit.sh
